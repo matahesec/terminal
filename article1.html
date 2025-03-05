@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Nexus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --hypr-blue: #89cff0;
+            --hypr-pink: #ff69b4;
+            --hypr-purple: #9b30ff;
+            --terminal-bg: rgba(17, 17, 27, 0.95);
+            --text-primary: #cdd6f4;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a1a2e, #0a0a0a);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Logo Animation */
+        .cyber-logo {
+            width: 150px;
+            height: 150px;
+            margin: 2rem auto;
+            border-radius: 50%;
+            background: url('https://i.pinimg.com/736x/0e/25/42/0e2542dd832b7290fd9c9faf2d5c1879.jpg') center/cover;
+            border: 3px solid var(--hypr-blue);
+            box-shadow: 0 0 30px var(--hypr-blue);
+            position: relative;
+            animation: logo-float 3s ease-in-out infinite;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 2px solid var(--hypr-pink);
+            animation: rotate 4s linear infinite;
+        }
+
+        /* Icons Style */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            color: var(--hypr-blue);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .icon:hover {
+            color: var(--hypr-pink);
+            transform: translateY(-3px);
+            filter: drop-shadow(0 0 5px var(--hypr-pink));
+        }
+
+        /* Terminal Style */
+        .hypr-terminal {
+            background: var(--terminal-bg);
+            border: 1px solid var(--hypr-purple);
+            border-radius: 15px;
+            width: 800px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(155, 48, 255, 0.2);
+        }
+
+        .terminal-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(205, 214, 244, 0.1);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .red { background: #ff5f57; }
+        .yellow { background: #febc2e; }
+        .green { background: #28c840; }
+
+        .terminal-body {
+            padding: 1.5rem;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .prompt {
+            color: var(--hypr-pink);
+            white-space: pre-wrap;
+        }
+
+        .command {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            width: 80%;
+            margin-left: 0.5rem;
+            outline: none;
+        }
+
+        /* Animations */
+        @keyframes logo-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tabs Style */
+        .hypr-tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .hypr-tab {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            background: rgba(137, 207, 240, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--hypr-blue);
+        }
+
+        .hypr-tab.active {
+            background: var(--hypr-blue);
+            color: #1a1a2e;
+            box-shadow: 0 0 15px var(--hypr-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-logo"></div>
+    
+    <div class="social-icons">
+        <i class="fab fa-github icon"></i>
+        <i class="fab fa-twitter icon"></i>
+        <i class="fab fa-discord icon"></i>
+        <i class="fas fa-code icon"></i>
+    </div>
+
+    <div class="hypr-tabs">
+        <div class="hypr-tab active">Terminal</div>
+        <div class="hypr-tab">Files</div>
+        <div class="hypr-tab">Network</div>
+    </div>
+
+    <div class="hypr-terminal">
+        <div class="terminal-header">
+            <div class="terminal-button red"></div>
+            <div class="terminal-button yellow"></div>
+            <div class="terminal-button green"></div>
+        </div>
+        <div class="terminal-body" id="terminal">
+            <div class="output">Welcome to Hyprland Nexus [Version 0.7.1]</div>
+            <div class="output">[ user@hyprland ~]$ neofetch</div>
+            <div class="output">
+                OS: Hyprland Nexus x86_64<br>
+                Host: Cyber Framework<br>
+                Kernel: 6.9.0-hypr<br>
+                Shell: zsh 5.9<br>
+                DE: Cyber Desktop 2077<br>
+                WM: Hyprland
+            </div>
+            <div class="prompt-line">
+                <span class="prompt">[ user@hyprland ~]$</span>
+                <input class="command" id="commandInput" autofocus>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const commandInput = document.getElementById('commandInput');
+        const virtualFS = {
+            'flag.txt': 'HYP{R34L_CYB3RPUNK}',
+            'system.cfg': '[theme]\nname = cyber-matrix\nversion = 2077',
+            'secret.txt': 'The password is: dopamine'
+        };
+
+        commandInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                const cmd = e.target.value.trim();
+                processCommand(cmd);
+                e.target.value = '';
+            }
+        });
+
+        function processCommand(cmd) {
+            const output = document.createElement('div');
+            output.className = 'output';
+
+            switch(cmd.split(' ')[0]) {
+                case 'ls':
+                    output.textContent = Object.keys(virtualFS).join('  ');
+                    break;
+                case 'cat':
+                    const file = cmd.split(' ')[1];
+                    output.textContent = virtualFS[file] || `cat: ${file}: No such file`;
+                    break;
+                case 'help':
+                    output.innerHTML = `
+                        Available commands:
+                        ls   - List files
+                        cat  - View file
+                        clear - Clean terminal
+                    document.querySelectorAll('.output').forEach(el => el.remove());
+                    break;
+                default:
+                    output.textContent = `hyprsh: command not found: ${cmd}`;
+            }
+
+            document.getElementById('terminal').appendChild(output);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>
